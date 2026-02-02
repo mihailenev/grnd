@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "GymApp-frontend",
-    "slug": "GymApp-frontend",
+    "name": "grnd-mobile",
+    "slug": "grnd-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "gymapp",
+    "scheme": "grnd",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
