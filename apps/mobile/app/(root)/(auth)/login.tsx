@@ -27,24 +27,22 @@ import { useUser } from "@/hooks/useUser";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user } = useUser();
+  const [error, setError] = useState(null);
+  const { user, login } = useUser();
 
-  const sentEmail = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    await api.post("/auth/signin", {
-      email: email,
-      password: password,
-    });
+  const handleLogin = async () => {
+    setError(null);
+    try {
+      await login(email, password);
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ThemedSafeAreaView style={styles.safe}>
+        {error && <Text style={styles.error}>{error}</Text>}
         <ThemedCard style={styles.card}>
           <ThemedText title={true} style={styles.title}>
             Log in
@@ -69,13 +67,7 @@ export default function Login() {
             secureTextEntry
           />
           <Spacer height={5} />
-          <ThemedButton
-            onPress={() => {
-              console.log(email, password);
-              //sentEmail({ email, password });
-              console.log(user);
-            }}
-          >
+          <ThemedButton onPress={handleLogin}>
             <Text style={{ color: "#f2f2f2" }}>Log in</Text>
           </ThemedButton>
           <Spacer height={10} />
@@ -132,5 +124,14 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.8,
     backgroundColor: Colours.primary + "80",
+  },
+  error: {
+    color: Colours.warning,
+    padding: 10,
+    backgroundColor: "#F5C1C8",
+    borderColor: Colours.warning,
+    borderWidth: 1,
+    borderRadius: 6,
+    marginHorizontal: 10,
   },
 });

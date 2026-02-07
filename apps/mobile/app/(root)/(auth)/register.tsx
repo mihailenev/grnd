@@ -15,6 +15,7 @@ import {
 import { Link, router } from "expo-router";
 import { api } from "@/lib/axios";
 import { Colours } from "@/constants/colours";
+import { useUser } from "@/hooks/useUser";
 
 import ThemedView from "@/components/ThemedView";
 import ThemedText from "@/components/ThemedText";
@@ -27,18 +28,17 @@ import ThemedTextInput from "@/components/ThemedTextInput";
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
 
-  const sentEmail = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    await api.post("/auth/signin", {
-      email: email,
-      password: password,
-    });
+  const { user, register } = useUser();
+
+  const handleRegister = async () => {
+    setError(null);
+    try {
+      await register(email, password);
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
 
   return (
@@ -67,16 +67,13 @@ export default function Register() {
             autoCapitalize="none"
             secureTextEntry
           />
-          <ThemedButton
-            onPress={() => {
-              console.log(email, password);
-              sentEmail({ email, password });
-            }}
-          >
+          <ThemedButton onPress={handleRegister}>
             <Text style={{ color: "#f2f2f2" }}>Register</Text>
           </ThemedButton>
         </ThemedCard>
         <Spacer height={10} />
+        {error && <Text style={styles.error}>{error}</Text>}
+        <Spacer height={70} />
         <Button title="Home" onPress={() => router.replace("/")} />
       </ThemedSafeAreaView>
     </TouchableWithoutFeedback>
@@ -122,5 +119,14 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.8,
     backgroundColor: Colours.primary + "80",
+  },
+  error: {
+    color: Colours.warning,
+    padding: 10,
+    backgroundColor: "#F5C1C8",
+    borderColor: Colours.warning,
+    borderWidth: 1,
+    borderRadius: 6,
+    marginHorizontal: 10,
   },
 });

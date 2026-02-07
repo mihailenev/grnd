@@ -4,12 +4,13 @@ import { Tabs } from "expo-router";
 import { Colours } from "@/constants/colours";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import UserOnly from "@/components/auth/UserOnly";
 
 const RootLayout = () => {
   const colourScheme = useColorScheme() ?? "light";
   const theme = Colours[colourScheme];
   return (
-    <>
+    <UserOnly>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -28,7 +29,7 @@ const RootLayout = () => {
         <Tabs.Screen name="profile" options={{ title: "Profile" }} />
         <Tabs.Screen name="about" options={{ title: "About" }} />
       </Tabs>
-    </>
+    </UserOnly>
   );
 };
 export default RootLayout;
