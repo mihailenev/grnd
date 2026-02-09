@@ -3,11 +3,13 @@ import { db } from "../db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { validateEmail, validatePassword } from "../utils/validators";
 import {
   findUserById,
   findUserByEmail,
   createUser,
 } from "../repositories/UserRepository";
+import { BadRequestError } from "../errors/BadRequestError";
 
 dotenv.config();
 
@@ -18,7 +20,7 @@ const loginUser = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Email and password are required" });
   }
 
-  const normalizedEmail = email.toLowerCase();
+  const normalizedEmail = email.trim().toLowerCase();
 
   try {
     const user = await findUserByEmail(normalizedEmail);
@@ -56,7 +58,16 @@ const registerUser = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Email and password are required" });
   }
 
-  const normalizedEmail = email.toLowerCase();
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (!validateEmail(email)) {
+    throw new BadRequestError("Invalid email");
+  }
+
+  if (!validatePassword(password)) {
+    throw new BadRequestError("Weak password");
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {

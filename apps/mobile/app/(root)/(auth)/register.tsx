@@ -11,6 +11,9 @@ import {
   TouchableNativeFeedbackComponent,
   Keyboard,
   TouchableWithoutFeedback,
+  useWindowDimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { api } from "@/lib/axios";
@@ -24,13 +27,34 @@ import Spacer from "@/components/Spacer";
 import ThemedButton from "@/components/ThemedButton";
 import ThemedSafeAreaView from "@/components/ThemedSafeAreaView";
 import ThemedTextInput from "@/components/ThemedTextInput";
+import { validateEmail } from "@/utils/validators";
+import {
+  isValidPassword,
+  hasMinLength,
+  hasLetter,
+  hasDigit,
+  hasSpecialChar,
+} from "@/utils/passwordRules";
+import PasswordRequirements from "@/components/PasswordRequirements";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-
   const { user, register } = useUser();
+
+  // To use later
+  //const { height } = useWindowDimensions();
+  //const topOffsetStyle = { paddingTop: height * 0.22 };
+
+  // email and password validations
+  const minLengthValid = hasMinLength(password);
+  const letterValid = hasLetter(password);
+  const digitValid = hasDigit(password);
+  const specialValid = hasSpecialChar(password);
+  const isValid = validateEmail(email) && isValidPassword(password);
+  const showEmailHint = email.length > 0 && !validateEmail(email);
+  const showPasswordHints = password.length > 0 && !isValidPassword(password);
 
   const handleRegister = async () => {
     setError(null);
@@ -43,39 +67,61 @@ export default function Register() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ThemedSafeAreaView style={styles.safe}>
-        <ThemedCard style={styles.card}>
-          <ThemedText title={true} style={styles.title}>
-            Register
-          </ThemedText>
-          <Spacer height={20} />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
+      >
+        <ThemedSafeAreaView style={[styles.safe]}>
+          <ThemedCard style={styles.card}>
+            <ThemedText title={true} style={styles.title}>
+              Register
+            </ThemedText>
+            <Spacer height={20} />
 
-          <ThemedTextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
+            <ThemedTextInput
+              style={[
+                styles.input,
+                showEmailHint && { borderBottomColor: "red" },
+              ]}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+            {showPasswordHints && (
+              <>
+                <PasswordRequirements
+                  minLength={minLengthValid}
+                  hasLetter={letterValid}
+                  hasDigit={digitValid}
+                  hasSpecial={specialValid}
+                />
+                <Spacer height={4} />
+              </>
+            )}
 
-          <ThemedTextInput
-            style={styles.input}
-            placeholder={"Password"}
-            value={password}
-            onChangeText={setPassword}
-            autoCapitalize="none"
-            secureTextEntry
-          />
-          <ThemedButton onPress={handleRegister}>
-            <Text style={{ color: "#f2f2f2" }}>Register</Text>
-          </ThemedButton>
-        </ThemedCard>
-        <Spacer height={10} />
-        {error && <Text style={styles.error}>{error}</Text>}
-        <Spacer height={70} />
-        <Button title="Home" onPress={() => router.replace("/")} />
-      </ThemedSafeAreaView>
+            <ThemedTextInput
+              style={[
+                styles.input,
+                showPasswordHints && { borderBottomColor: "red" },
+              ]}
+              placeholder={"Password"}
+              value={password}
+              onChangeText={setPassword}
+              autoCapitalize="none"
+              secureTextEntry
+            />
+            <Spacer height={5} />
+            <ThemedButton onPress={handleRegister} disabled={!isValid}>
+              <Text style={{ color: "#f2f2f2" }}>Register</Text>
+            </ThemedButton>
+          </ThemedCard>
+
+          <Spacer height={10} />
+          {error && <Text style={styles.error}>{error}</Text>}
+        </ThemedSafeAreaView>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
@@ -83,8 +129,9 @@ export default function Register() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    justifyContent: "center", // vertical center
-    alignItems: "center", // horizontal center
+    //paddingTop: 120,
+    alignItems: "center",
+    justifyContent: "center", // horizontal center
   },
   container: {
     flex: 1,
@@ -108,7 +155,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 6,
     padding: 10,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   btn: {
     backgroundColor: Colours.primary,

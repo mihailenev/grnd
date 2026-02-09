@@ -11,7 +11,7 @@ import ThemedSafeAreaView from "@/components/ThemedSafeAreaView";
 export default function Index() {
   return (
     <ThemedSafeAreaView style={styles.container}>
-      <Image source={images.logo} />
+      <Image source={images.logo} style={{ width: 330, height: 120 }} />
       <Spacer height={20} />
       <ThemedText title={true} style={styles.title}>
         Home /

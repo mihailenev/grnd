@@ -2,6 +2,7 @@ import { useUser } from "@/hooks/useUser";
 import { useRouter } from "expo-router";
 import { Text } from "react-native";
 import { PropsWithChildren, useEffect } from "react";
+import ThemedLoader from "../ThemedLoader";
 
 const GuestOnly = ({ children }: PropsWithChildren) => {
   const { user, isLoading } = useUser();
@@ -13,7 +14,7 @@ const GuestOnly = ({ children }: PropsWithChildren) => {
 
   if (isLoading || user) {
     // in future return splash screen
-    return <Text>Loading</Text>;
+    return <ThemedLoader />;
   }
   return children;
 };

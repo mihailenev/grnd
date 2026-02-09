@@ -26,6 +26,7 @@ const ThemedTextInput = ({ style, ...props }: ThemedTextInutProps) => {
           color: theme.text,
           padding: 20,
           borderRadius: 6,
+          borderBottomColor: theme.text,
         },
         style,
       ]}
