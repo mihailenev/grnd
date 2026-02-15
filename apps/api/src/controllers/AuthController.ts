@@ -10,6 +10,7 @@ import {
   createUser,
 } from "../repositories/UserRepository";
 import { BadRequestError } from "../errors/BadRequestError";
+import { ConflictError } from "../errors/ConflictError";
 
 dotenv.config();
 
@@ -55,12 +56,12 @@ const registerUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
+    throw new BadRequestError("Email and password are required");
   }
 
   const normalizedEmail = email.trim().toLowerCase();
 
-  if (!validateEmail(email)) {
+  if (!validateEmail(normalizedEmail)) {
     throw new BadRequestError("Invalid email");
   }
 
@@ -77,16 +78,16 @@ const registerUser = async (req: Request, res: Response) => {
       message: "User created successfully",
       userId: result.insertId,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     //  duplicate email
-    if (error.code === "23505" || error.code === "ER_DUP_ENTRY") {
-      return res.status(409).json({
-        message: "Email already exists",
-      });
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      (error as any).code === "23505"
+    ) {
+      throw new ConflictError("Email already exists");
     }
-
-    console.error("error:", error);
-    return res.status(500).json({ message: "Failed to create user" });
+    throw error;
   }
 };
 

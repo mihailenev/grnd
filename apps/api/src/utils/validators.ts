@@ -1,6 +1,6 @@
 export const validateEmail = (email: string): boolean => {
   // basic email validation
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.toLowerCase());
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
 export const validatePassword = (password: string): boolean => {
