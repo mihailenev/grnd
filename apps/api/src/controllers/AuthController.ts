@@ -11,6 +11,7 @@ import {
 } from "../repositories/UserRepository";
 import { BadRequestError } from "../errors/BadRequestError";
 import { ConflictError } from "../errors/ConflictError";
+import { UnauthorizedError } from "../errors/UnauthorizedError";
 
 dotenv.config();
 
@@ -18,38 +19,33 @@ const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
+    throw new BadRequestError("Email and password are required");
   }
 
   const normalizedEmail = email.trim().toLowerCase();
 
-  try {
-    const user = await findUserByEmail(normalizedEmail);
+  const user = await findUserByEmail(normalizedEmail);
 
-    if (!user) {
-      return res.status(401).json({ message: "Wrong email or password" });
-    }
-
-    const isValid = await bcrypt.compare(password, user.password_hash);
-
-    if (!isValid) {
-      return res.status(401).json({ message: "Wrong email or password" });
-    }
-
-    if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET not defined");
-    }
-
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
-    });
-    return res
-      .status(200)
-      .json({ user: { id: user.id, email: user.email }, token: token });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Failed to check users" });
+  if (!user) {
+    throw new UnauthorizedError("Wrong email or password");
   }
+
+  const isValid = await bcrypt.compare(password, user.password_hash);
+
+  if (!isValid) {
+    throw new UnauthorizedError("Wrong email or password");
+  }
+
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET not defined");
+  }
+
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+  return res
+    .status(200)
+    .json({ user: { id: user.id, email: user.email }, token: token });
 };
 
 const registerUser = async (req: Request, res: Response) => {

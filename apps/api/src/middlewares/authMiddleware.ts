@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { UnauthorizedError } from "../errors/UnauthorizedError";
 
 dotenv.config();
 
@@ -11,8 +12,7 @@ export const authMiddleware = (
 ) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader)
-    return res.status(401).json({ message: "No token provided" });
+  if (!authHeader) throw new UnauthorizedError("No token provided");
 
   const [, token] = authHeader.split(" ");
 
@@ -24,6 +24,6 @@ export const authMiddleware = (
     req.user = decoded;
     next();
   } catch {
-    return res.status(401).json({ message: "Invalid token" });
+    throw new UnauthorizedError("Invalid token");
   }
 };
