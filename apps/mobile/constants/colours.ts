@@ -1,16 +1,16 @@
 export const Colours = {
-  primary: "#6849a7",
+  primary: "#a01c1c",
   warning: "#cc475a",
 
   dark: {
     text: "#d4d4d4",
     title: "#fff",
     placeHolder: "#BFBFBF",
-    background: "#252231",
+    background: "#252527",
     navBackground: "#201e2b",
     iconColour: "#9591a5",
     iconColourFocused: "#fff",
-    uiBackground: "#2f2b3d", // Card Background
+    uiBackground: "#2f2f31", // Card Background
   },
   light: {
     text: "#625f72",

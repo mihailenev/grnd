@@ -15,11 +15,11 @@ const RootLayout = () => {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: theme.navBackground,
+            backgroundColor: theme.background,
             paddingTop: 1,
             height: 70,
           },
-          tabBarActiveTintColor: theme.iconColourFocused,
+          tabBarActiveTintColor: Colours.primary,
           tabBarInactiveTintColor: theme.iconColour,
           //tabBarActiveBackgroundColor: theme.navBackground,
         }}

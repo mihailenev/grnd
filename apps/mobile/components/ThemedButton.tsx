@@ -3,30 +3,35 @@ import {
   StyleSheet,
   ViewStyle,
   StyleProp,
-  ViewProps,
+  View,
 } from "react-native";
 import React from "react";
 import { Colours } from "@/constants/colours";
 
-type ThemedButtonProps = ViewProps & {
+type ThemedButtonProps = {
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
 };
 
-function ThemedButton({ style, onPress, ...props }: ThemedButtonProps) {
-  const filteredProps = Object.fromEntries(
-    Object.entries(props).filter(([key, value]) => value != null),
-  );
+function ThemedButton({
+  style,
+  onPress,
+  disabled = false,
+  children,
+}: ThemedButtonProps) {
   return (
     <TouchableHighlight
       onPress={onPress}
-      underlayColor={Colours.primary + "80"}
-      style={[styles.btn, style]}
-      {...filteredProps}
-    />
+      disabled={disabled}
+      underlayColor={disabled ? "transparent" : Colours.primary + "80"}
+      style={[styles.btn, disabled && styles.disabled, style]}
+    >
+      <View>{children}</View>
+    </TouchableHighlight>
   );
 }
-
 export default ThemedButton;
 
 const styles = StyleSheet.create({
@@ -35,5 +40,8 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 5,
     alignItems: "center",
+  },
+  disabled: {
+    opacity: 0.5,
   },
 });

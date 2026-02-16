@@ -19,6 +19,7 @@ export async function findUserByEmail(email: string) {
 export async function createUser(email: string, password_hash: string) {
   return db
     .insertInto("users")
-    .values({ email: email, password_hash: password_hash })
+    .values({ email, password_hash })
+    .returning(["id"])
     .executeTakeFirstOrThrow();
 }

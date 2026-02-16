@@ -27,3 +27,6 @@ web-build/
 # Editor
 .vscode/
 node_modules
+
+# Notes
+TODO.md

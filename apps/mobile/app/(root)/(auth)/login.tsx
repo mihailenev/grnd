@@ -10,12 +10,12 @@ import {
   View,
   TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  useWindowDimensions,
 } from "react-native";
-import { Link, router } from "expo-router";
-import { api } from "@/lib/axios";
+import { router } from "expo-router";
 import { Colours } from "@/constants/colours";
-
-import ThemedView from "@/components/ThemedView";
 import ThemedText from "@/components/ThemedText";
 import ThemedCard from "@/components/ThemedCard";
 import Spacer from "@/components/Spacer";
@@ -23,12 +23,18 @@ import ThemedButton from "@/components/ThemedButton";
 import ThemedSafeAreaView from "@/components/ThemedSafeAreaView";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import { useUser } from "@/hooks/useUser";
+import { validateEmail } from "@/utils/validators";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const { user, login } = useUser();
+
+  // To use later
+  //const { height } = useWindowDimensions();
+  //const topOffsetStyle = { paddingTop: height * 0.22 };
+  const showEmailHint = email.length > 0 && !validateEmail(email);
 
   const handleLogin = async () => {
     setError(null);
@@ -41,45 +47,54 @@ export default function Login() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ThemedSafeAreaView style={styles.safe}>
-        {error && <Text style={styles.error}>{error}</Text>}
-        <ThemedCard style={styles.card}>
-          <ThemedText title={true} style={styles.title}>
-            Log in
-          </ThemedText>
-          <Spacer height={20} />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
+      >
+        <ThemedSafeAreaView style={[styles.safe]}>
+          <ThemedCard style={styles.card}>
+            <ThemedText title={true} style={styles.title}>
+              Log in
+            </ThemedText>
+            <Spacer height={20} />
 
-          <ThemedTextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
+            <ThemedTextInput
+              style={[
+                styles.input,
+                showEmailHint && { borderBottomColor: "red" },
+              ]}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
 
-          <ThemedTextInput
-            style={styles.input}
-            placeholder={"Password"}
-            value={password}
-            onChangeText={setPassword}
-            autoCapitalize="none"
-            secureTextEntry
-          />
-          <Spacer height={5} />
-          <ThemedButton onPress={handleLogin}>
-            <Text style={{ color: "#f2f2f2" }}>Log in</Text>
-          </ThemedButton>
+            <ThemedTextInput
+              style={styles.input}
+              placeholder={"Password"}
+              value={password}
+              onChangeText={setPassword}
+              autoCapitalize="none"
+              secureTextEntry
+            />
+            <Spacer height={5} />
+            <ThemedButton onPress={handleLogin}>
+              <Text style={{ color: "#f2f2f2" }}>Log in</Text>
+            </ThemedButton>
+            <Spacer height={10} />
+            <View style={{ alignItems: "center" }}>
+              <ThemedText onPress={() => router.push("/register")}>
+                {"Don't have an account? "}
+                <ThemedText style={styles.registerLink}>Register</ThemedText>
+              </ThemedText>
+            </View>
+          </ThemedCard>
+
           <Spacer height={10} />
-          <View style={{ alignItems: "center" }}>
-            <Link href="/register">
-              <ThemedText>Dont have an account?</ThemedText>
-            </Link>
-          </View>
-        </ThemedCard>
-        <Spacer height={10} />
-        <Button title="Home" onPress={() => router.replace("/")} />
-      </ThemedSafeAreaView>
+          {error && <Text style={styles.error}>{error}</Text>}
+        </ThemedSafeAreaView>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
@@ -87,8 +102,8 @@ export default function Login() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    justifyContent: "center", // vertical center
     alignItems: "center", // horizontal center
+    justifyContent: "center",
   },
   container: {
     flex: 1,
@@ -113,7 +128,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 6,
     padding: 10,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   btn: {
     backgroundColor: Colours.primary,
@@ -133,5 +148,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 6,
     marginHorizontal: 10,
+  },
+  registerLink: {
+    textDecorationLine: "underline",
+    color: Colours.primary,
   },
 });
