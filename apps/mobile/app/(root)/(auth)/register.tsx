@@ -37,11 +37,14 @@ import {
 } from "@/utils/passwordRules";
 import PasswordRequirements from "@/components/PasswordRequirements";
 
+import { Ionicons } from "@expo/vector-icons";
+
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const { user, register } = useUser();
+  const [showPassword, setShowPassword] = useState(false);
 
   // To use later
   //const { height } = useWindowDimensions();
@@ -89,6 +92,30 @@ export default function Register() {
               autoCapitalize="none"
               keyboardType="email-address"
             />
+
+            <View>
+              <ThemedTextInput
+                style={[
+                  styles.input,
+                  showPasswordHints && { borderBottomColor: "red" },
+                ]}
+                placeholder={"Password"}
+                value={password}
+                onChangeText={setPassword}
+                autoCapitalize="none"
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity
+                style={styles.eyeIcon}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Ionicons
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
+                  size={22}
+                  color="#666"
+                />
+              </TouchableOpacity>
+            </View>
             {showPasswordHints && (
               <>
                 <PasswordRequirements
@@ -100,18 +127,6 @@ export default function Register() {
                 <Spacer height={4} />
               </>
             )}
-
-            <ThemedTextInput
-              style={[
-                styles.input,
-                showPasswordHints && { borderBottomColor: "red" },
-              ]}
-              placeholder={"Password"}
-              value={password}
-              onChangeText={setPassword}
-              autoCapitalize="none"
-              secureTextEntry
-            />
             <Spacer height={5} />
             <ThemedButton onPress={handleRegister} disabled={!isValid}>
               <Text style={{ color: "#f2f2f2" }}>Register</Text>
@@ -175,5 +190,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 6,
     marginHorizontal: 10,
+  },
+  eyeIcon: {
+    position: "absolute",
+    right: 12,
+    top: 10,
   },
 });

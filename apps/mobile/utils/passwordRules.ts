@@ -11,7 +11,7 @@ export const hasDigit = (password: string) => {
 };
 
 export const hasSpecialChar = (password: string) => {
-  return /[^A-Za-z0-9]/.test(password);
+  return /[^\p{L}\p{N}]/u.test(password);
 };
 
 export const isValidPassword = (password: string) => {
