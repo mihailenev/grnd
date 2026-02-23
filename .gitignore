@@ -27,3 +27,10 @@ web-build/
 # Editor
 .vscode/
 node_modules
+
+# Notes
+TODO.md
+mermaid-postgres.sql
+mermaid.md
+mermaid.sql
+apps/api/db
